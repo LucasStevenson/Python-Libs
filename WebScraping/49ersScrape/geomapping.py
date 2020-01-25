@@ -1,6 +1,9 @@
 import ssl
 import certifi
 import csv
+import os
+from os import path
+
 from geopy.geocoders import Nominatim
 import geopy.geocoders
 
@@ -49,6 +52,8 @@ for player, university in players_uni_dict.items():
 
 print(lat_long_dict)
 
+if path.exists("player_file.csv"):
+    os.remove("player_file.csv")
 
 with open('player_file.csv', 'a') as player_file:
     player_writer = csv.writer(player_file, delimiter=',')
