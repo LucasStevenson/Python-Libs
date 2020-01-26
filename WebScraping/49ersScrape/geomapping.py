@@ -1,3 +1,5 @@
+import plotly.graph_objects as go
+import pandas as pd
 import ssl
 import certifi
 import csv
@@ -9,7 +11,7 @@ import geopy.geocoders
 
 ctx = ssl.create_default_context(cafile=certifi.where())
 geopy.geocoders.options.default_ssl_context = ctx
-
+'''
 with open("fourtyNiners.csv") as f:
     line = f.readline()
     players_uni_dict = {}
@@ -45,6 +47,7 @@ for player, university in players_uni_dict.items():
 
         lat_long["latitude"] = location.latitude
         lat_long["longitude"] = location.longitude
+        lat_long["location"] = university
         lat_long_dict[player] = lat_long
     except Exception as e:
         print(e)
@@ -57,8 +60,29 @@ if path.exists("player_file.csv"):
 
 with open('player_file.csv', 'a') as player_file:
     player_writer = csv.writer(player_file, delimiter=',')
-    player_writer.writerow(['Player', "Latitude", "Longitude"])
+    player_writer.writerow(['Player', "Latitude", "Longitude", "Location"])
 
     for player, latlong in lat_long_dict.items():
         player_writer.writerow(
-            [player, latlong["latitude"], latlong["longitude"]])
+            [player, latlong["latitude"], latlong["longitude"], latlong["location"]])
+'''
+
+df = pd.read_csv('player_file.csv')
+
+fig = go.Figure(data=go.Scattergeo(
+    lon=df['Longitude'],
+    lat=df['Latitude'],
+    text=df["Player"] + ": " + df["Location"],
+    mode='markers',
+    marker_color="rgb(210, 0, 0)"
+))
+
+fig.update_layout(
+    title='SF 49ers Colleges<br>(Hover for [player name: college])',
+    geo=dict(
+        scope='usa',
+        showland=True,
+        landcolor="rgb(207,181,59)",
+    ),
+)
+fig.show()
